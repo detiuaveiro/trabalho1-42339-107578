@@ -5,7 +5,9 @@
 # make clean        # to cleanup object files and executables
 # make cleanobj     # to cleanup object files only
 
+CC = gcc
 CFLAGS = -Wall -O2 -g
+LDLIBS = -lm
 
 PROGS = imageTool imageTest
 

@@ -172,6 +172,27 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
+
+  Image newImage = (Image)malloc(sizeof (struct image));
+  if (newImage == NULL) //Falta de memoria
+  {
+    return NULL;
+  }
+
+  newImage -> width = width;
+  newImage -> height = height;
+  newImage-> maxval = PixMax;
+  
+  newImage -> pixel = (uint8*)calloc(width * height, sizeof(uint8));
+  if (newImage -> pixel == NULL) //Falta de memoria
+  {
+    free(newImage);
+    return NULL;
+  }
+  
+
+  return newImage;
+  
 }
 
 /// Destroy the image pointed to by (*imgp).
@@ -182,6 +203,11 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 void ImageDestroy(Image* imgp) { ///
   assert (imgp != NULL);
   // Insert your code here!
+
+  free((*imgp) -> pixel);
+  free(*imgp);
+  *imgp = NULL;
+
 }
 
 
@@ -207,6 +233,8 @@ static int skipComments(FILE* f) {
 /// On success, a new image is returned.
 /// (The caller is responsible for destroying the returned image!)
 /// On failure, returns NULL and errno/errCause are set accordingly.
+
+
 Image ImageLoad(const char* filename) { ///
   int w, h;
   int maxval;
@@ -240,6 +268,7 @@ Image ImageLoad(const char* filename) { ///
   if (f != NULL) fclose(f);
   return img;
 }
+
 
 /// Save image to PGM file.
 /// On success, returns nonzero.
@@ -294,6 +323,46 @@ int ImageMaxval(Image img) { ///
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
   // Insert your code here!
+
+  
+  *min = *max = img->pixel[0]; //Assim tambem funciona para imagens 1x1, apesar de improvaveis
+
+  uint8 greyLevel;
+  for (int i = 1; i < img->width * img->height; i++)
+  {
+    greyLevel = img->pixel[i];
+    if (greyLevel < *min)
+    {
+      *min = greyLevel;
+    }
+    else if (greyLevel > *max)
+    {
+      *max = greyLevel;
+    }
+  }
+  
+  
+  /*
+  //VERSAO POR INDEX PARA TESTAR O G, como sugere o readme
+  uint8 greyLevel;
+  for (int x = 0; x < img->width; x++)
+  {
+    for (int y = 0; y < img -> height; y++)
+    {
+      greyLevel = ImageGetPixel(img, x, y);
+      if (greyLevel < *min)
+      {
+        *min = greyLevel;
+      }
+      else if (greyLevel > *max)
+      {
+        *max = greyLevel;
+      }
+    }
+  }
+  */
+  
+  
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -306,6 +375,9 @@ int ImageValidPos(Image img, int x, int y) { ///
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   // Insert your code here!
+
+  //X,Y é o canto superior esquerdo do retangulo
+  return (ImageValidPos(img,x,y) && x+w-1 < img->width && y+h-1 < img->height);
 }
 
 /// Pixel get & set operations
@@ -321,6 +393,8 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here!
+  index = (y * img -> width) + x; //So porque y começa em 0, senao estaria a contar a linha em que ja estava
+
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -356,6 +430,11 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 void ImageNegative(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+
+  for (int i = 0; i < img->width * img->height; i++)
+  {
+    img->pixel[i] = 255 - img->pixel[i]; 
+  }
 }
 
 /// Apply threshold to image.
@@ -364,6 +443,14 @@ void ImageNegative(Image img) { ///
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
   // Insert your code here!
+  for (int i = 0; i < img->width * img->height; i++)
+  {
+    if (img->pixel[i] < thr)
+    {
+      img->pixel[i] = 0;
+    }
+  }
+
 }
 
 /// Brighten image by a factor.
@@ -374,6 +461,19 @@ void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
   // ? assert (factor >= 0.0);
   // Insert your code here!
+
+  double greyLevel;
+  for (int i = 0; i < img->width * img->height; i++)
+  {
+    greyLevel = img->pixel[i];
+    greyLevel *= factor;
+    if (greyLevel > 255)
+    {
+      greyLevel = 255;
+    }
+
+    img->pixel[i] = (uint8)greyLevel;
+  }
 }
 
 
@@ -401,6 +501,28 @@ void ImageBrighten(Image img, double factor) { ///
 Image ImageRotate(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+
+  /* 
+  Seja P1 um ponto na imagem, e P2 o mesmo ponto na imagem, depois da rotação:
+  P1 (x,y)
+  c- comprimento
+  
+  P2 (y,c-x-1)
+
+  Nota: Seria P2 (y,c-x+1) se os indices não começassem em 0
+  */
+
+  Image rotatedImage = ImageCreate(img->height,img->width,PixMax);
+
+  for (int x = 0; x < img->width; x++)
+  {
+    for (int y = 0; y < img -> height; y++)
+    {
+      ImageSetPixel(rotatedImage,y,img->width-x-1,ImageGetPixel(img,x,y));
+    }
+  }
+  
+  return rotatedImage;
 }
 
 /// Mirror an image = flip left-right.
@@ -413,6 +535,18 @@ Image ImageRotate(Image img) { ///
 Image ImageMirror(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+
+  Image mirroredImage = ImageCreate(img->height,img->width,PixMax);
+
+  for (int x = 0; x < img->width; x++)
+  {
+    for (int y = 0; y < img -> height; y++)
+    {
+      ImageSetPixel(mirroredImage,img->width-x-1,y,ImageGetPixel(img,x,y));
+    }
+  }
+  
+  return mirroredImage;
 }
 
 /// Crop a rectangular subimage from img.
@@ -431,6 +565,18 @@ Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));
   // Insert your code here!
+
+  Image croppedImage = ImageCreate(w,h,PixMax);
+
+  for (int oldX = x; oldX < x + w; oldX++)
+  {
+    for (int oldY = y; oldY < y + h; oldY++)
+    {
+      ImageSetPixel(croppedImage,oldX - x,oldY - y, ImageGetPixel(img,oldX,oldY));
+    }
+  }
+  
+  return croppedImage;
 }
 
 
@@ -445,6 +591,11 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
+  for(int i = x; i < x+img2->width; i++){
+    for(int z = y; i < y+img2->height; z++){
+      ImageSetPixel(img1, i, z, ImageGetPixel(img2, i-x, z-y));
+    }
+  }
 }
 
 /// Blend an image into a larger image.
@@ -458,6 +609,19 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img2 != NULL);
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
+  if(alpha > 1.0){
+    alpha = 1.0;
+  }
+  else if(alpha < 0.0){
+    alpha = 0.0;
+  };
+
+  for(int i = x ; i < x+img2->width ; i++ ){
+    for(int z = y; i < y+img2->height; z++){
+      uint8 greyLevel = (ImageGetPixel(img2, i-x, z-y)*alpha) + (ImageGetPixel(img1, i, z)*(1-alpha));
+      ImageSetPixel(img1, i, z, greyLevel);
+    }
+  }  
 }
 
 /// Compare an image to a subimage of a larger image.
@@ -468,6 +632,9 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
+  Image croppedImg1 = ImageCrop(img1, x, y, img2->width, img2->height); //OBTENÇÃO DA SUBIMAGEM
+  for(int)
+
 }
 
 /// Locate a subimage inside another image.
