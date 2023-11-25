@@ -592,7 +592,7 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (ImageValidRect(img1, x, y, img2->width, img2->height));
   // Insert your code here!
   for(int i = x; i < x+img2->width; i++){
-    for(int z = y; i < y+img2->height; z++){
+    for(int z = y; z < y+img2->height; z++){
       ImageSetPixel(img1, i, z, ImageGetPixel(img2, i-x, z-y));
     }
   }
@@ -617,7 +617,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   };
 
   for(int i = x ; i < x+img2->width ; i++ ){
-    for(int z = y; i < y+img2->height; z++){
+    for(int z = y; z < y+img2->height; z++){
       uint8 greyLevel = (ImageGetPixel(img2, i-x, z-y)*alpha) + (ImageGetPixel(img1, i, z)*(1-alpha));
       ImageSetPixel(img1, i, z, greyLevel);
     }
