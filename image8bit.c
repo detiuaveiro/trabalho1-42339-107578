@@ -702,9 +702,9 @@ void ImageBlur(Image img, int dx, int dy) { ///
       sumOfPixels = 0;
 
       //Iteração pelos pixeis do retangulo a usar no blur
-      for (int rectX = x-dx; x < x+dx+1; rectX++)
+      for (int rectX = x-dx; rectX < x+dx+1; rectX++)
       {
-        for (int rectY = y-dy; x < y+dy+1; rectY++)
+        for (int rectY = y-dy; rectY < y+dy+1; rectY++)
         {
           //Verificar se o pixel existe. O ImageGetPixel -> G tem um assert mas nao queremos uma mensagem de erro aqui        
           if (0 <= rectX && rectX < img->width && 0 <= rectY && rectX < img->height)
