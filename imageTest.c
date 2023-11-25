@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
   //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
   //Image img2 = ImageRotate(img1);
-  Image img2 = img1;
+  Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
   ImageBlur(img2,5,5);
   if (img2 == NULL) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());

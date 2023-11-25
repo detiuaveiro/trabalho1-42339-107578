@@ -691,7 +691,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
   Image oldImage = ImageCrop(img,0,0,img->width,img->height); //Criamos uma copia da imagem antiga para ler os pixeis antigos sem os pixeis "blurred" afetarem o resultado
 
   int consideredPixels;
-  int sumOfPixels;
+  float sumOfPixels; //Assim o calculo da media será em float
 
   //Iteração por todos os pixeis da imagem
   for (int x = 0; x < img->width; x++)
@@ -707,14 +707,14 @@ void ImageBlur(Image img, int dx, int dy) { ///
         for (int rectY = y-dy; rectY < y+dy+1; rectY++)
         {
           //Verificar se o pixel existe. O ImageGetPixel -> G tem um assert mas nao queremos uma mensagem de erro aqui        
-          if (0 <= rectX && rectX < img->width && 0 <= rectY && rectX < img->height)
+          if (ImageValidPos(img,rectX,rectY) == 1)
           {
             sumOfPixels += ImageGetPixel(oldImage,rectX,rectY);
             consideredPixels++;
           }         
         }
       }      
-      ImageSetPixel(img,x,y,(uint8)sumOfPixels/consideredPixels); //A media dos valores dos pixeis no retangulo
+      ImageSetPixel(img,x,y,(uint8)(sumOfPixels/consideredPixels)); //A media dos valores dos pixeis no retangulo
     }
   }
 
