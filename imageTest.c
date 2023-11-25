@@ -37,10 +37,22 @@ int main(int argc, char* argv[]) {
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
 
-  //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
+  //Image img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
   //Image img2 = ImageRotate(img1);
-  Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
-  ImageBlur(img2,5,5);
+  //Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
+
+  
+  Image img2 = ImageLoad("test/small.pgm"); 
+  int px = 0;
+  int py = 0;
+  if (ImageLocateSubImage(img1,&px,&py,img2) == 1)
+  { 
+    printf("Number 1: %d\n", px);
+    printf("Number 2: %d\n", py);
+  }
+
+
+  //ImageBlur(img2,5,5);
   if (img2 == NULL) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());
   }

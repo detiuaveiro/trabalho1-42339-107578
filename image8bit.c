@@ -637,9 +637,22 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   {
     return 0;
   }
+
+  for(int i = 0 ; i < img2->width ; i++ ){
+    for(int z = 0; z < img2->height; z++){
+      if (ImageGetPixel(img1,i+x,z+y) != ImageGetPixel(img2,i,z))
+      {
+        return 0;
+      }
+    }
+  }
+  /*
+  Mais simples, mas incrivelmente mais lento:
+
+
   Image croppedImg = ImageCrop(img1, x, y, img2->width, img2->height); //OBTENÇÃO DA SUBIMAGEM
   
-  for (int i = 1; i < img2->width * img2->height; i++)
+  for (int i = 0; i < img2->width * img2->height; i++)
   {
     if (img2->pixel[i] != croppedImg->pixel[i]) 
     {
@@ -647,6 +660,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
       return 0;
     }
   }
+  */
   
   return 1;
 
