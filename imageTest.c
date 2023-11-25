@@ -23,36 +23,46 @@ int main(int argc, char* argv[]) {
   if (argc != 3) {
     error(1, 0, "Usage: imageTest input.pgm output.pgm");
   }
-
+                                                                                    //INICIALIZAÇÃO DE IMAGEM
   ImageInit();
   
   printf("# LOAD image");
-  InstrReset(); // to reset instrumentation
+                                                                                    //RESET À  INSTRUMENTAÇÃO
+  InstrReset(); // to reset instrumentation                 
+                                                                                    //LOAD DA IMAGEM 1
   Image img1 = ImageLoad(argv[1]);
   if (img1 == NULL) {
     error(2, errno, "Loading %s: %s", argv[1], ImageErrMsg());
   }
-  InstrPrint(); // to print instrumentation
+                                                                                    //PRINT DA INSTRUMENTAÇÃO
+  InstrPrint(); // to print instrumentation                                         
 
   // Try changing the behaviour of the program by commenting/uncommenting
   // the appropriate lines.
 
-  //img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
-  Image img2 = ImageRotate(img1);
+                                                                                    //TESTE À FUNÇÃO DE IMAGECROP()
+  Image img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
+
+                                                                                    //TESTE À FUNÇÃO DE IMAGEROTATE()
+  img2 = ImageRotate(img1);
   if (img2 == NULL) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());
   }
 
-  //ImageNegative(img2);
-  //ImageThreshold(img2, 100);
+                                                                                    //TESTE À FUNÇÃO IMAGENEGATIVE()
+  ImageNegative(img2);
+
+                                                                                    //TESTE À FUNÇÃO IMAGETHRESHOLD()
+  ImageThreshold(img2, 100);
+
+                                                                                    //TESTE À FUNÇÃO IMAGEBRIGHTEN()
   ImageBrighten(img2, 1.3);
 
   if (ImageSave(img2, argv[2]) == 0) {
     error(2, errno, "%s: %s", argv[2], ImageErrMsg());
   }
-
+  
   ImageDestroy(&img1);
   ImageDestroy(&img2);
   return 0;
 }
-
