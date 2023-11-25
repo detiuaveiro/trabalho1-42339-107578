@@ -11,11 +11,11 @@
 
 // Student authors (fill in below):
 // NMec:  Name:
-// 
-// 
+// Alexandre Sério | nº 42339
+// Tiago Cepa      | nº 107578
 // 
 // Date:
-//
+// 25/11/2023
 
 #include "image8bit.h"
 
@@ -433,7 +433,7 @@ void ImageNegative(Image img) { ///
 
   for (int i = 0; i < img->width * img->height; i++)
   {
-    img->pixel[i] = PixMax - img->pixel[i]; 
+    img->pixel[i] = img->maxval - img->pixel[i]; 
   }
 }
 
@@ -448,6 +448,10 @@ void ImageThreshold(Image img, uint8 thr) { ///
     if (img->pixel[i] < thr)
     {
       img->pixel[i] = 0;
+    }
+    else if (img->pixel[i] >= thr)
+    {
+      img->pixel[i] = img->maxval;
     }
   }
 
@@ -467,9 +471,9 @@ void ImageBrighten(Image img, double factor) { ///
   {
     greyLevel = img->pixel[i];
     greyLevel *= factor;
-    if (greyLevel > PixMax)
+    if (greyLevel > img->maxval)
     {
-      greyLevel = PixMax;
+      greyLevel = img->maxval;
     }
 
     img->pixel[i] = (uint8)greyLevel;

@@ -39,9 +39,11 @@ int main(int argc, char* argv[]) {
 
   //Image img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
   //Image img2 = ImageRotate(img1);
-  //Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
+  Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
+  //Image img2 = ImageMirror(img1);
+  ImageThreshold(img2,128);
 
-  
+  /* TESTE DO SUBIMAGE
   Image img2 = ImageLoad("test/small.pgm"); 
   int px = 0;
   int py = 0;
@@ -50,12 +52,28 @@ int main(int argc, char* argv[]) {
     printf("Number 1: %d\n", px);
     printf("Number 2: %d\n", py);
   }
+  */
 
+  /* TESTE DO BLEND
+  Image img3 = ImageLoad("test/small.pgm");
+  ImageBlend(img2,100,100,img3,0.5);
+  ImageDestroy(&img3);
 
   //ImageBlur(img2,5,5);
   if (img2 == NULL) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());
   }
+  */
+  /* TESTE DO PASTE
+  Image img3 = ImageLoad("test/small.pgm");
+  ImagePaste(img2,100,100,img3);
+  ImageDestroy(&img3);
+
+  //ImageBlur(img2,5,5);
+  if (img2 == NULL) {
+    error(2, errno, "Rotating img2: %s", ImageErrMsg());
+  }
+  */
 
   //ImageNegative(img2);
   //ImageThreshold(img2, 100);
