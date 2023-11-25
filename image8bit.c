@@ -11,11 +11,11 @@
 
 // Student authors (fill in below):
 // NMec:  Name:
-// 
-// 
+// Alexandre Sério | nº 42339
+// Tiago Cepa      | nº 107578
 // 
 // Date:
-//
+// 25/11/2023
 
 #include "image8bit.h"
 
@@ -433,7 +433,7 @@ void ImageNegative(Image img) { ///
 
   for (int i = 0; i < img->width * img->height; i++)
   {
-    img->pixel[i] = PixMax - img->pixel[i]; 
+    img->pixel[i] = img->maxval - img->pixel[i]; 
   }
 }
 
@@ -448,6 +448,10 @@ void ImageThreshold(Image img, uint8 thr) { ///
     if (img->pixel[i] < thr)
     {
       img->pixel[i] = 0;
+    }
+    else if (img->pixel[i] >= thr)
+    {
+      img->pixel[i] = img->maxval;
     }
   }
 
@@ -467,9 +471,9 @@ void ImageBrighten(Image img, double factor) { ///
   {
     greyLevel = img->pixel[i];
     greyLevel *= factor;
-    if (greyLevel > PixMax)
+    if (greyLevel > img->maxval)
     {
-      greyLevel = PixMax;
+      greyLevel = img->maxval;
     }
 
     img->pixel[i] = greyLevel;
@@ -636,9 +640,22 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   {
     return 0;
   }
+
+  for(int i = 0 ; i < img2->width ; i++ ){
+    for(int z = 0; z < img2->height; z++){
+      if (ImageGetPixel(img1,i+x,z+y) != ImageGetPixel(img2,i,z))
+      {
+        return 0;
+      }
+    }
+  }
+  /*
+  Mais simples, mas incrivelmente mais lento:
+
+
   Image croppedImg = ImageCrop(img1, x, y, img2->width, img2->height); //OBTENÇÃO DA SUBIMAGEM
   
-  for (int i = 1; i < img2->width * img2->height; i++)
+  for (int i = 0; i < img2->width * img2->height; i++)
   {
     if (img2->pixel[i] != croppedImg->pixel[i]) 
     {
@@ -646,6 +663,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
       return 0;
     }
   }
+  */
   
   return 1;
 
@@ -690,7 +708,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
   Image oldImage = ImageCrop(img,0,0,img->width,img->height); //Criamos uma copia da imagem antiga para ler os pixeis antigos sem os pixeis "blurred" afetarem o resultado
 
   int consideredPixels;
-  int sumOfPixels;
+  float sumOfPixels; //Assim o calculo da media será em float
 
   //Iteração por todos os pixeis da imagem
   for (int x = 0; x < img->width; x++)
@@ -701,19 +719,19 @@ void ImageBlur(Image img, int dx, int dy) { ///
       sumOfPixels = 0;
 
       //Iteração pelos pixeis do retangulo a usar no blur
-      for (int rectX = x-dx; x < x+dx+1; rectX++)
+      for (int rectX = x-dx; rectX < x+dx+1; rectX++)
       {
-        for (int rectY = y-dy; x < y+dy+1; rectY++)
+        for (int rectY = y-dy; rectY < y+dy+1; rectY++)
         {
           //Verificar se o pixel existe. O ImageGetPixel -> G tem um assert mas nao queremos uma mensagem de erro aqui        
-          if (0 <= rectX && rectX < img->width && 0 <= rectY && rectX < img->height)
+          if (ImageValidPos(img,rectX,rectY) == 1)
           {
             sumOfPixels += ImageGetPixel(oldImage,rectX,rectY);
             consideredPixels++;
           }         
         }
       }      
-      ImageSetPixel(img,x,y,(uint8)sumOfPixels/consideredPixels); //A media dos valores dos pixeis no retangulo
+      ImageSetPixel(img,x,y,(uint8)(sumOfPixels/consideredPixels)); //A media dos valores dos pixeis no retangulo
     }
   }
 
