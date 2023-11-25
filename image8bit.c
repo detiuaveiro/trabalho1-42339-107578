@@ -433,7 +433,7 @@ void ImageNegative(Image img) { ///
 
   for (int i = 0; i < img->width * img->height; i++)
   {
-    img->pixel[i] = 255 - img->pixel[i]; 
+    img->pixel[i] = PixMax - img->pixel[i]; 
   }
 }
 
@@ -467,9 +467,9 @@ void ImageBrighten(Image img, double factor) { ///
   {
     greyLevel = img->pixel[i];
     greyLevel *= factor;
-    if (greyLevel > 255)
+    if (greyLevel > PixMax)
     {
-      greyLevel = 255;
+      greyLevel = PixMax;
     }
 
     img->pixel[i] = (uint8)greyLevel;
@@ -632,8 +632,23 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
-  Image croppedImg1 = ImageCrop(img1, x, y, img2->width, img2->height); //OBTENÇÃO DA SUBIMAGEM
-  for(int)
+
+  if (ImageValidRect(img1, x, y, img2->width, img2->height) == 0)
+  {
+    return 0;
+  }
+  Image croppedImg = ImageCrop(img1, x, y, img2->width, img2->height); //OBTENÇÃO DA SUBIMAGEM
+  
+  for (int i = 1; i < img2->width * img2->height; i++)
+  {
+    if (img2->pixel[i] != croppedImg->pixel[i]) 
+    {
+      ImageDestroy(&croppedImg);
+      return 0;
+    }
+  }
+  
+  return 1;
 
 }
 
@@ -645,6 +660,22 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
+
+  for (int x = 0; x < img1->width; x++)
+  {
+    for (int y = 0; y < img1-> height; y++)
+    {
+      //A função ImageMatchSubImage já verifica se o retangulo pretendido cabe na imagem
+      if (ImageMatchSubImage(img1,x,y,img2) == 1)
+      {
+        //Return positions
+        *px = x;
+        *py = y;
+        return 1; //Return true
+      }
+    }
+  }
+  return 0;
 }
 
 
@@ -656,5 +687,40 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
   // Insert your code here!
+
+  Image oldImage = ImageCrop(img,0,0,img->width,img->height); //Criamos uma copia da imagem antiga para ler os pixeis antigos sem os pixeis "blurred" afetarem o resultado
+
+  int consideredPixels;
+  int sumOfPixels;
+
+  //Iteração por todos os pixeis da imagem
+  for (int x = 0; x < img->width; x++)
+  {
+    for (int y = 0; y < img-> height; y++)
+    {
+      consideredPixels = 0;
+      sumOfPixels = 0;
+
+      //Iteração pelos pixeis do retangulo a usar no blur
+      for (int rectX = x-dx; x < x+dx+1; rectX++)
+      {
+        for (int rectY = y-dy; x < y+dy+1; rectY++)
+        {
+          //Verificar se o pixel existe. O ImageGetPixel -> G tem um assert mas nao queremos uma mensagem de erro aqui        
+          if (0 <= rectX && rectX < img->width && 0 <= rectY && rectX < img->height)
+          {
+            sumOfPixels += ImageGetPixel(oldImage,rectX,rectY);
+            consideredPixels++;
+          }         
+        }
+      }      
+      ImageSetPixel(img,x,y,(uint8)sumOfPixels/consideredPixels); //A media dos valores dos pixeis no retangulo
+    }
+  }
+
+  ImageDestroy(&oldImage);
+
 }
+
+
 
