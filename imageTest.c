@@ -39,20 +39,30 @@ int main(int argc, char* argv[]) {
 
   //Image img2 = ImageCrop(img1, ImageWidth(img1)/4, ImageHeight(img1)/4, ImageWidth(img1)/2, ImageHeight(img1)/2);
   //Image img2 = ImageRotate(img1);
-  Image img2 = ImageCrop(img1,0,0,300,300); //Copia a imagem, visto que é 300x300
+  Image img2 = ImageCrop(img1,0,0,100,78); //Copia a imagem, visto que é 300x300 ou 100x78
   //Image img2 = ImageMirror(img1);
-  ImageThreshold(img2,128);
+  //ImageThreshold(img2,128);
 
-  /* TESTE DO SUBIMAGE
-  Image img2 = ImageLoad("test/small.pgm"); 
+  
+  /*
+  //Teste do subimagelocate
+  Image img3 = ImageLoad("test/neg.pgm"); 
+  InstrReset();
   int px = 0;
   int py = 0;
-  if (ImageLocateSubImage(img1,&px,&py,img2) == 1)
+  if (ImageLocateSubImage(img1,&px,&py,img3) == 1)
   { 
     printf("Number 1: %d\n", px);
     printf("Number 2: %d\n", py);
   }
+  else
+  {
+    printf("Not Found");
+  }
+  
+  InstrPrint();
   */
+  
 
   /* TESTE DO BLEND
   Image img3 = ImageLoad("test/small.pgm");
@@ -64,16 +74,22 @@ int main(int argc, char* argv[]) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());
   }
   */
-  /* TESTE DO PASTE
-  Image img3 = ImageLoad("test/small.pgm");
-  ImagePaste(img2,100,100,img3);
-  ImageDestroy(&img3);
 
-  //ImageBlur(img2,5,5);
+  /*
+  //TESTE DO PASTE
+  Image img3 = ImageLoad("test/small.pgm");
+  ImagePaste(img2,0,0,img3);
+  ImageDestroy(&img3);
+  */
+
+  InstrReset();
+  ImageBlur(img2,2,10);
+  InstrPrint();
+
   if (img2 == NULL) {
     error(2, errno, "Rotating img2: %s", ImageErrMsg());
   }
-  */
+  
 
   //ImageNegative(img2);
   //ImageThreshold(img2, 100);

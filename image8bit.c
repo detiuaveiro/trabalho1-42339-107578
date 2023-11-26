@@ -377,6 +377,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   // Insert your code here!
 
   //X,Y é o canto superior esquerdo do retangulo
+  
   return (ImageValidPos(img,x,y) && x+w-1 < img->width && y+h-1 < img->height);
 }
 
@@ -705,6 +706,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
   // Insert your code here!
+
 
   Image oldImage = ImageCrop(img,0,0,img->width,img->height); //Criamos uma copia da imagem antiga para ler os pixeis antigos sem os pixeis "blurred" afetarem o resultado
 
