@@ -39,14 +39,17 @@ test/:
 	@#curl -s -o test/aed-trab1-test.zip https://sweet.ua.pt/mario.antunes/aed/test/aed-trab1-test.zip
 	@#unzip -q -o test/aed-trab1-test.zip -d test/
 
+#TESTE NEGATIVO:
 test1: $(PROGS) setup
 	./imageTool test/original.pgm neg save neg.pgm
 	cmp neg.pgm test/neg.pgm
 
+#TESTE THRESHOLD
 test2: $(PROGS) setup
 	./imageTool test/original.pgm thr 128 save thr.pgm
 	cmp thr.pgm test/thr.pgm
 
+#TESTE BRIGHTNESS
 test3: $(PROGS) setup
 	./imageTool test/original.pgm bri .33 save bri.pgm
 	cmp bri.pgm test/bri.pgm

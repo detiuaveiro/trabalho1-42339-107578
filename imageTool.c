@@ -120,21 +120,21 @@ int main(int ac, char* av[]) {
     } else if (strcmp(av[k], "neg") == 0) {
       if (n < 1) { err = 2; break; }
       fprintf(stderr, "Negating I%d\n", n-1);
-      ImageNegative(img[n-1]);
+      ImageNegative(img[n-1]);                                                                      //IMAGE NEGATIVE
     } else if (strcmp(av[k], "thr") == 0) {
       if (++k >= ac) { err = 1; break; }
       if (n < 1) { err = 2; break; }
       uint8 thr;
       if (sscanf(av[k], "%hhu", &thr) != 1) { err = 5; break; }
       fprintf(stderr, "Thresholding I%d at %d\n", n-1, thr);
-      ImageThreshold(img[n-1], (uint8)thr);
+      ImageThreshold(img[n-1], (uint8)thr);                                                          //IMAGE THRESHOLD
     } else if (strcmp(av[k], "bri") == 0) {
       if (++k >= ac) { err = 1; break; }
       if (n < 1) { err = 2; break; }
       double factor;
       if (sscanf(av[k], "%lf", &factor) != 1) { err = 5; break; }
       fprintf(stderr, "Brightening I%d by %lf\n", n-1, factor);
-      ImageBrighten(img[n-1], factor);
+      ImageBrighten(img[n-1], factor);                                                               //IMAGEBRIGHTEN
     } else if (strcmp(av[k], "create") == 0) {
       if (++k >= ac) { err = 1; break; }
       if (n >= N) { err = 3; break; }

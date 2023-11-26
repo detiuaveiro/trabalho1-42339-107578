@@ -467,7 +467,7 @@ void ImageBrighten(Image img, double factor) { ///
   // ? assert (factor >= 0.0);
   // Insert your code here!
 
-  double greyLevel;
+  uint8 greyLevel;
   for (int i = 0; i < img->width * img->height; i++)
   {
     greyLevel = img->pixel[i];
@@ -477,10 +477,9 @@ void ImageBrighten(Image img, double factor) { ///
       greyLevel = img->maxval;
     }
 
-    img->pixel[i] = (uint8)greyLevel;
+    img->pixel[i] = greyLevel;
   }
 }
-
 
 /// Geometric transformations
 
